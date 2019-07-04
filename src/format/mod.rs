@@ -3,4 +3,4 @@ pub mod sample;
 
 pub use packing::*;
 pub use sample::*;
-pub use litcontainers::Dim;
+pub use litcontainers::{Dim, Dynamic, U1, U2, U3, U4, U5, U6, U7, U8};

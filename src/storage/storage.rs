@@ -79,7 +79,7 @@ pub trait AudioStorage<T, C, L, P>: SizedAudioStorage<T, C, L, P> + Storage<T, C
 				self.channel_stride_dim(),
 				self.sample_stride_dim(),
 			)
-		})
+		}, self.sample_rate())
 	}
 
 	#[inline]
@@ -93,6 +93,6 @@ pub trait AudioStorage<T, C, L, P>: SizedAudioStorage<T, C, L, P> + Storage<T, C
 				self.channel_stride_dim(),
 				self.sample_stride_dim(),
 			)
-		})
+		}, self.sample_rate())
 	}
 }

@@ -1,5 +1,4 @@
 use crate::format::*;
-use crate::storage::*;
 use litcontainers::{DynamicRowStorage, DynamicColStorage};
 
 pub trait DynamicChannelStorage<T, L>: DynamicRowStorage<T, L>

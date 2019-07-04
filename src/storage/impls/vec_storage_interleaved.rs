@@ -16,7 +16,9 @@ impl<T, C, L> AudioStorage<T, C, L, InterleavedPacking> for InterleavedStorage<T
 
 impl<T, C, L> AudioStorageMut<T, C, L, InterleavedPacking> for InterleavedStorage<T, C, L>
 	where T: Sample, C: Dim, L: Dim
-{}
+{
+	fn set_sample_rate(&mut self, _sample_rate: i32) {}
+}
 
 impl<T, C, L> OwnableAudio<T, C, L> for InterleavedStorage<T, C, L>
 	where T: Sample, C: Dim, L: Dim

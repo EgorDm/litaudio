@@ -1,13 +1,15 @@
 use litcontainers::{SliceRange, StorageMut};
 use crate::format::*;
 use crate::iterator::*;
-use crate::storage::{SizedAudioStorage, OwnableAudio, AudioStorage, AudioPtrMutStorage};
+use crate::storage::{SizedAudioStorage, AudioStorage, AudioPtrMutStorage};
 use crate::slice::AudioSliceMut;
 
 
 pub trait AudioStorageMut<T, C, L, P>: SizedAudioStorage<T, C, L, P> + AudioStorage<T, C, L, P> + StorageMut<T, C, L>
 	where T: Sample, C: Dim, L: Dim, P: SamplePackingType
 {
+	fn set_sample_rate(&mut self, sample_rate: i32);
+
 	// Row Contigious Access Functions
 	#[inline]
 	fn as_channel_mut_slice<'b, 'a: 'b>(&'a mut self, v: usize) -> &'b mut [T] { self.as_row_mut_slice(v) }
@@ -57,7 +59,7 @@ pub trait AudioStorageMut<T, C, L, P>: SizedAudioStorage<T, C, L, P> + AudioStor
 				self.channel_stride_dim(),
 				self.sample_stride_dim(),
 			)
-		})
+		}, self.sample_rate())
 	}
 
 	#[inline]
@@ -71,6 +73,6 @@ pub trait AudioStorageMut<T, C, L, P>: SizedAudioStorage<T, C, L, P> + AudioStor
 				self.channel_stride_dim(),
 				self.sample_stride_dim(),
 			)
-		})
+		}, self.sample_rate())
 	}
 }

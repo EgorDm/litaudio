@@ -16,7 +16,9 @@ impl<T, C, L> AudioStorage<T, C, L, DeinterleavedPacking> for DeinterleavedStora
 
 impl<T, C, L> AudioStorageMut<T, C, L, DeinterleavedPacking> for DeinterleavedStorage<T, C, L>
 	where T: Sample, C: Dim, L: Dim
-{}
+{
+	fn set_sample_rate(&mut self, _sample_rate: i32) { }
+}
 
 impl<T, C, L> OwnableAudio<T, C, L> for DeinterleavedStorage<T, C, L>
 	where T: Sample, C: Dim, L: Dim
