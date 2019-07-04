@@ -1,7 +1,10 @@
+#[macro_use] extern crate litcontainers_derive;
+
 pub mod container;
 pub mod format;
 pub mod slice;
 pub mod storage;
+pub mod iterator;
 
 #[cfg(test)]
 mod tests {
