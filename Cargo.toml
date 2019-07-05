@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 litcontainers = { path = "../litcontainers/litcontainers" }
 litcontainers_derive = { path = "../litcontainers/litcontainers_derive" }
+num-traits = "0.2"

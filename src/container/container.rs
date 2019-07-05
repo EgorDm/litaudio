@@ -5,6 +5,9 @@ use litcontainers::format::*;
 use litcontainers::storage::*;
 use litcontainers::Container;
 
+pub type AudioDeinterleaved<T, C, L> = AudioContainer<T, C, L, DeinterleavedPacking, DeinterleavedStorage<T, C, L>>;
+pub type AudioInterleaved<T, C, L> = AudioContainer<T, C, L, InterleavedPacking, InterleavedStorage<T, C, L>>;
+
 #[repr(C)]
 #[dimension_fields(T, C, L)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, SizedStorage, Storage, StorageMut)]

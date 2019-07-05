@@ -6,6 +6,13 @@ pub mod slice;
 pub mod storage;
 pub mod iterator;
 
+pub use container::*;
+pub use format::*;
+pub use slice::*;
+pub use storage::*;
+pub use iterator::*;
+
+
 #[cfg(test)]
 mod tests {
 	#[test]

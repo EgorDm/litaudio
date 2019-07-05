@@ -83,7 +83,7 @@ pub trait AudioStorage<T, C, L, P>: SizedAudioStorage<T, C, L, P> + Storage<T, C
 	}
 
 	#[inline]
-	fn slice_sample<'b: 'c, 'c, LR: SliceRange<L>>(&'b self, range: LR) -> AudioSlice<'c, T, C, Self::RStride, LR::Size, Self::CStride, P> {
+	fn slice_samples<'b: 'c, 'c, LR: SliceRange<L>>(&'b self, range: LR) -> AudioSlice<'c, T, C, Self::RStride, LR::Size, Self::CStride, P> {
 		assert!(range.end() <= self.col_count(), "Slice is out of bounds!");
 		AudioSlice::new(unsafe {
 			AudioPtrStorage::new(
