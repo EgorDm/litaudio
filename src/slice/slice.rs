@@ -1,9 +1,10 @@
+use litcontainers::storage::*;
+use litcontainers::{Container, OffsetableRowSlice, OffsetableColSlice};
+use std::marker::PhantomData;
 use crate::format::*;
 use crate::storage::*;
-use litcontainers::storage::*;
-use litcontainers::Container;
-use std::marker::PhantomData;
 use crate::container::AudioContainer;
+use super::offset::*;
 
 pub type AudioSlice<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrStorage<'a, T, C, CS, L, LS, P>>;
 pub type AudioSliceMut<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrMutStorage<'a, T, C, CS, L, LS, P>>;
@@ -45,7 +46,25 @@ impl<'a, T, C, L, P, S> Ownable<T, C, L> for AudioSliceBase<'a, T, C, L, P, S>
 impl<'a, T, C, L, P, S> StorageMut<T, C, L> for AudioSliceBase<'a, T, C, L, P, S>
 	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
 {
-	unsafe fn get_index_mut_ptr_unchecked(&mut self, i: usize) -> *mut T { self. storage.get_index_mut_ptr_unchecked(i) }
+	unsafe fn get_index_mut_ptr_unchecked(&mut self, i: usize) -> *mut T { self.storage.get_index_mut_ptr_unchecked(i) }
+}
+
+impl<'a, T, L, P, S> OffsetableRowSlice<T, L> for AudioSliceBase<'a, T, Dynamic, L, P, S>
+	where T: Sample, L: Dim, P: SamplePackingType, S: AudioStorage<T, Dynamic, L, P> + OffsetableRowSlice<T, L>
+{
+	#[inline]
+	unsafe fn offset_row_unchecked(&mut self, v: usize) {
+		self.storage.offset_row_unchecked(v);
+	}
+}
+
+impl<'a, T, C, P, S> OffsetableColSlice<T, C> for AudioSliceBase<'a, T, C, Dynamic, P, S>
+	where T: Sample, C: Dim, P: SamplePackingType, S: AudioStorage<T, C, Dynamic, P> + OffsetableColSlice<T, C>
+{
+	#[inline]
+	unsafe fn offset_col_unchecked(&mut self, v: usize) {
+		self.storage.offset_col_unchecked(v);
+	}
 }
 
 // Litaudio implementations
@@ -56,7 +75,7 @@ impl<'a, T, C, L, P, S> SizedAudioStorage<T, C, L, P> for AudioSliceBase<'a, T, 
 impl<'a, T, C, L, P, S> AudioStorage<T, C, L, P> for AudioSliceBase<'a, T, C, L, P, S>
 	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorage<T, C, L, P>
 {
-	fn sample_rate(&self) -> i32 { 1 }
+	fn sample_rate(&self) -> i32 { self.sample_rate }
 }
 
 impl<'a, T, C, L, P, S> AudioStorageMut<T, C, L, P> for AudioSliceBase<'a, T, C, L, P, S>
@@ -79,5 +98,35 @@ impl<'a, T, C, L, P, S> OwnableAudio<T, C, L> for AudioSliceBase<'a, T, C, L, P,
 	fn clone_owned_audio(&self) -> Self::OwnedAudioType {
 		let sr = self.sample_rate();
 		Self::OwnedAudioType::new(self.storage.clone_owned_audio(), sr)
+	}
+}
+
+impl<'a, T, L, P, S> OffsetableChannelSlice<T, L> for AudioSliceBase<'a, T, Dynamic, L, P, S>
+	where T: Sample, L: Dim, P: SamplePackingType, S: AudioStorage<T, Dynamic, L, P> + OffsetableRowSlice<T, L>
+{}
+
+impl<'a, T, C, P, S> OffsetableSampleSlice<T, C> for AudioSliceBase<'a, T, C, Dynamic, P, S>
+	where T: Sample, C: Dim, P: SamplePackingType, S: AudioStorage<T, C, Dynamic, P> + OffsetableColSlice<T, C>
+{}
+
+impl<'a, T, C, CS, LS, P> AudioSlice<'a, T, C, CS, Dynamic, LS, P>
+	where T: Sample, C: Dim, CS: Dim, LS: Dim, P: SamplePackingType
+{
+	pub fn shift_sample_to<S, CO, LO>(&mut self, storage: &S, sample_offset: usize, sample_count: usize)
+		where CO: Dim, LO: Dim,
+		      S: Storage<T, CO, LO, RStride=<Self as Storage<T, C, Dynamic>>::RStride, CStride=<Self as Storage<T, C, Dynamic>>::CStride>
+	{
+		self.storage.shift_sample_to(storage, sample_offset, sample_count)
+	}
+}
+
+impl<'a, T, C, CS, LS, P> AudioSliceMut<'a, T, C, CS, Dynamic, LS, P>
+	where T: Sample, C: Dim, CS: Dim, LS: Dim, P: SamplePackingType
+{
+	pub fn shift_sample_to<S, CO, LO>(&mut self, storage: &mut S, sample_offset: usize, sample_count: usize)
+		where CO: Dim, LO: Dim, S: Storage<T, CO, LO>
+		+ StorageMut<T, CO, LO, RStride=<Self as Storage<T, C, Dynamic>>::RStride, CStride=<Self as Storage<T, C, Dynamic>>::CStride>
+	{
+		self.storage.shift_sample_to(storage, sample_offset, sample_count)
 	}
 }

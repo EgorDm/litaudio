@@ -10,6 +10,9 @@ pub trait AudioStorageMut<T, C, L, P>: SizedAudioStorage<T, C, L, P> + AudioStor
 {
 	fn set_sample_rate(&mut self, sample_rate: i32);
 
+	#[inline]
+	fn as_mut_ptr(&mut self) -> *const T { unsafe { self.get_index_mut_ptr_unchecked(0) } }
+
 	// Row Contigious Access Functions
 	#[inline]
 	fn as_channel_mut_slice<'b, 'a: 'b>(&'a mut self, v: usize) -> &'b mut [T] { self.as_row_mut_slice(v) }
@@ -63,7 +66,7 @@ pub trait AudioStorageMut<T, C, L, P>: SizedAudioStorage<T, C, L, P> + AudioStor
 	}
 
 	#[inline]
-	fn slice_sample_mut<'b: 'c, 'c, LR: SliceRange<L>>(&'b mut self, range: LR) -> AudioSliceMut<'c, T, C, Self::RStride, LR::Size, Self::CStride, P> {
+	fn slice_samples_mut<'b: 'c, 'c, LR: SliceRange<L>>(&'b mut self, range: LR) -> AudioSliceMut<'c, T, C, Self::RStride, LR::Size, Self::CStride, P> {
 		assert!(range.end() <= self.col_count(), "Slice is out of bounds!");
 		AudioSliceMut::new(unsafe {
 			AudioPtrMutStorage::new(

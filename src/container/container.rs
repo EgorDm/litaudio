@@ -72,7 +72,7 @@ impl<T, C, L, P, S> SizedAudioStorage<T, C, L, P> for AudioContainer<T, C, L, P,
 impl<T, C, L, P, S> AudioStorage<T, C, L, P> for AudioContainer<T, C, L, P, S>
 	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
 {
-	fn sample_rate(&self) -> i32 { 1 }
+	fn sample_rate(&self) -> i32 { self.sample_rate }
 }
 
 impl<T, C, L, P, S> AudioStorageMut<T, C, L, P> for AudioContainer<T, C, L, P, S>
