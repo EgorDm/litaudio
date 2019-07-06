@@ -31,26 +31,49 @@ fn indexing() {
 }
 
 #[test]
-fn resizing() {
+fn resizing_upsize() {
 	let mut s = AudioDeinterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
-	s.set_sample_count(3);
+	s.resize_sample_count(3);
 	assert_eq!(s.sample_count(), 3);
 	assert_eq!(s.as_slice(), [1., 2., 0., 3., 4., 0.]);
 
 	let mut s = AudioDeinterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
-	s.set_channel_count(3);
+	s.resize_channel_count(3);
 	assert_eq!(s.channel_count(), 3);
 	assert_eq!(s.as_slice(), [1., 2., 3., 4., 0., 0.]);
 
 	let mut s = AudioInterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
-	s.set_sample_count(3);
+	s.resize_sample_count(3);
 	assert_eq!(s.sample_count(), 3);
 	assert_eq!(s.as_slice(), [1., 3., 2., 4., 0., 0.]);
 
 	let mut s = AudioInterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
-	s.set_channel_count(3);
+	s.resize_channel_count(3);
 	assert_eq!(s.channel_count(), 3);
 	assert_eq!(s.as_slice(), [1., 3., 0., 2., 4., 0.]);
+}
+
+#[test]
+fn resizing_downsize() {
+	let mut s = AudioDeinterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
+	s.resize_sample_count(1);
+	assert_eq!(s.sample_count(), 1);
+	assert_eq!(s.as_slice(), [1., 3.]);
+
+	let mut s = AudioDeinterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
+	s.resize_channel_count(1);
+	assert_eq!(s.channel_count(), 1);
+	assert_eq!(s.as_slice(), [1., 2.]);
+
+	let mut s = AudioInterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
+	s.resize_sample_count(1);
+	assert_eq!(s.sample_count(), 1);
+	assert_eq!(s.as_slice(), [1., 3.]);
+
+	let mut s = AudioInterleaved::from_vec(Dynamic::new(2), Dynamic::new(2), vec![1., 2., 3., 4.]);
+	s.resize_channel_count(1);
+	assert_eq!(s.channel_count(), 1);
+	assert_eq!(s.as_slice(), [1., 2.]);
 }
 
 #[test]
