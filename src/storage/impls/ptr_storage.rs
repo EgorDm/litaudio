@@ -107,7 +107,7 @@ impl<'a, T, C, CS, L, LS, P> StorageMut<T, C, L> for AudioPtrMutStorage<'a, T, C
 impl<'a, T, C, CS, L, LS, P> AudioStorageMut<T, C, L, P> for AudioPtrMutStorage<'a, T, C, CS, L, LS, P>
 	where T: Sample, C: Dim, CS: Dim, L: Dim, LS: Dim, P: SamplePackingType
 {
-	fn set_sample_rate(&mut self, sample_rate: i32) { }
+	fn set_sample_rate(&mut self, _sample_rate: i32) { }
 }
 
 impl<'a, T, CS, L, LS, P> AudioPtrStorage<'a, T, Dynamic, CS, L, LS, P>
