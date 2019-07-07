@@ -1,4 +1,4 @@
-use litcontainers::Scalar;
+use litcontainers::{ElementaryScalar};
 use std::mem::size_of;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -11,7 +11,7 @@ pub enum SampleType {
 	Int64,
 }
 
-pub trait Sample: Scalar
+pub trait Sample: ElementaryScalar
 {
 	fn get_sample_type() -> SampleType;
 
