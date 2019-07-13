@@ -4,6 +4,7 @@ use std::marker::PhantomData;
 use litcontainers::format::*;
 use litcontainers::storage::*;
 use litcontainers::Container;
+use std::fmt::{Display, Formatter, Error};
 
 pub type AudioDeinterleaved<T, C, L> = AudioContainer<T, C, L, DeinterleavedPacking, DeinterleavedStorage<T, C, L>>;
 pub type AudioInterleaved<T, C, L> = AudioContainer<T, C, L, InterleavedPacking, InterleavedStorage<T, C, L>>;
@@ -105,3 +106,11 @@ impl<T, L, P, S> DynamicChannelStorage<T, L> for AudioContainer<T, Dynamic, L, P
 impl<T, C, P, S> DynamicSampleStorage<T, C> for AudioContainer<T, C, Dynamic, P, S>
 	where T: Sample, C: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, Dynamic, P> + DynamicColStorage<T, C>
 {}
+
+impl<T, C, L, P, S> Display for AudioContainer<T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
+{
+	fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+		write!(f, "{}", Fmt(|f| print_storage(self, f)))
+	}
+}

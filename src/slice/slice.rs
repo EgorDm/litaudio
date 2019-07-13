@@ -1,10 +1,12 @@
 use litcontainers::storage::*;
+use litcontainers::ops::*;
 use litcontainers::{Container, OffsetableRowSlice, OffsetableColSlice};
 use std::marker::PhantomData;
 use crate::format::*;
 use crate::storage::*;
 use crate::container::AudioContainer;
 use super::offset::*;
+use std::fmt::{Display, Formatter, Error};
 
 pub type AudioSlice<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrStorage<'a, T, C, CS, L, LS, P>>;
 pub type AudioSliceMut<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrMutStorage<'a, T, C, CS, L, LS, P>>;
@@ -128,5 +130,35 @@ impl<'a, T, C, CS, LS, P> AudioSliceMut<'a, T, C, CS, Dynamic, LS, P>
 		+ StorageMut<T, CO, LO, RStride=<Self as Storage<T, C, Dynamic>>::RStride, CStride=<Self as Storage<T, C, Dynamic>>::CStride>
 	{
 		self.storage.shift_sample_to(storage, sample_offset, sample_count)
+	}
+}
+
+impl<'a, T, C, L, P, S> Display for AudioSliceBase<'a, T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorage<T, C, L, P>
+{
+	fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+		write!(f, "{}", Fmt(|f| print_storage(self, f)))
+	}
+}
+
+impl<'a, T, C, L, P, S> Sum for AudioSliceBase<'a, T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorage<T, C, L, P>
+{
+	type Output = T;
+
+	fn sum(&self) -> Self::Output {
+		let mut ret = T::default();
+		for v in self.as_row_iter() { ret += *v }
+		ret
+	}
+}
+
+impl<'a, T, C, L, P, S> Mean for AudioSliceBase<'a, T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorage<T, C, L, P>
+{
+	type Output = T;
+
+	fn mean(&self) -> Self::Output {
+		self.sum() / num_traits::cast(self.size()).unwrap()
 	}
 }
