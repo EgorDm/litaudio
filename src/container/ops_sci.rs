@@ -153,3 +153,26 @@ macro_rules! impl_binary_float_op (
 impl_binary_float_op!(Log, log, LogAssign, log_assign);
 impl_binary_float_op!(Max, max, MaxAssign, max_assign);
 impl_binary_float_op!(Min, min, MinAssign, min_assign);
+
+
+impl<T, C, L, P, S> Sum for AudioContainer<T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
+{
+	type Output = T;
+
+	fn sum(&self) -> Self::Output {
+		let mut ret = T::default();
+		for v in self.as_row_iter() { ret += *v }
+		ret
+	}
+}
+
+impl<T, C, L, P, S> Mean for AudioContainer<T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
+{
+	type Output = T;
+
+	fn mean(&self) -> Self::Output {
+		self.sum() / num_traits::cast(self.size()).unwrap()
+	}
+}
