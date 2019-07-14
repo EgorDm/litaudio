@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-pub trait SamplePackingType: Debug {
+pub trait SamplePackingType: Debug + Send + Sync {
 	fn get_packing_type() -> SamplePacking;
 }
 
