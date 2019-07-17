@@ -3,6 +3,7 @@ use crate::format::*;
 use crate::storage::*;
 use crate::slice::offset::*;
 use std::marker::PhantomData;
+use std::ops::{IndexMut, Index};
 
 
 macro_rules! ptr_storage (
@@ -90,6 +91,17 @@ macro_rules! ptr_storage (
 		impl<'a, T, C, CS, LS, P> OffsetableSampleSlice<T, C> for $Name<'a, T, C, CS, Dynamic, LS, P>
 			where T: Sample, C: Dim, CS: Dim, LS: Dim, P: SamplePackingType
 		{}
+
+		impl<'a, T, C, CS, L, LS, P> Index<usize> for $Name<'a, T, C, CS, L, LS, P>
+			where T: Sample, C: Dim, CS: Dim, L: Dim, LS: Dim, P: SamplePackingType
+		{
+			type Output = T;
+
+			fn index(&self, index: usize) -> &Self::Output {
+				assert!(index < self.size());
+				unsafe { &*self.get_index_ptr_unchecked(index) }
+			}
+		}
 	}
 );
 
@@ -149,5 +161,14 @@ impl<'a, T, C, CS, LS, P> AudioPtrMutStorage<'a, T, C, CS, Dynamic, LS, P>
 			+ StorageMut<T, CO, LO, RStride=<Self as Storage<T, C, Dynamic>>::RStride, CStride=<Self as Storage<T, C, Dynamic>>::CStride>
 	{
 		self.storage.shift_col_to(storage, sample_offset, sample_count)
+	}
+}
+
+impl<'a, T, C, CS, L, LS, P> IndexMut<usize> for AudioPtrMutStorage<'a, T, C, CS, L, LS, P>
+	where T: Sample, C: Dim, CS: Dim, L: Dim, LS: Dim, P: SamplePackingType
+{
+	fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+		assert!(index < self.size());
+		unsafe { &mut *self.get_index_mut_ptr_unchecked(index) }
 	}
 }

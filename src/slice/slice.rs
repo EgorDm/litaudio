@@ -7,6 +7,7 @@ use crate::storage::*;
 use crate::container::AudioContainer;
 use super::offset::*;
 use std::fmt::{Display, Formatter, Error};
+use std::ops::{Index, IndexMut};
 
 pub type AudioSlice<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrStorage<'a, T, C, CS, L, LS, P>>;
 pub type AudioSliceMut<'a, T, C, CS, L, LS, P> = AudioSliceBase<'a, T, C, L, P, AudioPtrMutStorage<'a, T, C, CS, L, LS, P>>;
@@ -160,5 +161,25 @@ impl<'a, T, C, L, P, S> Mean for AudioSliceBase<'a, T, C, L, P, S>
 
 	fn mean(&self) -> Self::Output {
 		self.sum() / num_traits::cast(self.size()).unwrap()
+	}
+}
+
+impl<'a, T, C, L, P, S> Index<usize> for AudioSliceBase<'a, T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorage<T, C, L, P>
+{
+	type Output = T;
+
+	fn index(&self, index: usize) -> &Self::Output {
+		assert!(index < self.size());
+		unsafe { &*self.get_index_ptr_unchecked(index) }
+	}
+}
+
+impl<'a, T, C, L, P, S> IndexMut<usize> for AudioSliceBase<'a, T, C, L, P, S>
+	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
+{
+	fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+		assert!(index < self.size());
+		unsafe { &mut *self.get_index_mut_ptr_unchecked(index) }
 	}
 }
