@@ -114,6 +114,8 @@ impl<'a, T, C, CS, L, LS, P> StorageMut<T, C, L> for AudioPtrMutStorage<'a, T, C
 	unsafe fn get_index_mut_ptr_unchecked(&mut self, i: usize) -> *mut T {
 		self.storage.get_index_mut_ptr_unchecked(i)
 	}
+
+	fn map_inplace<F: FnMut(&mut T)>(&mut self, f: F) { self.storage.map_inplace(f) }
 }
 
 impl<'a, T, C, CS, L, LS, P> AudioStorageMut<T, C, L, P> for AudioPtrMutStorage<'a, T, C, CS, L, LS, P>

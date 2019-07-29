@@ -50,6 +50,8 @@ impl<'a, T, C, L, P, S> StorageMut<T, C, L> for AudioSliceBase<'a, T, C, L, P, S
 	where T: Sample, C: Dim, L: Dim, P: SamplePackingType, S: AudioStorageMut<T, C, L, P>
 {
 	unsafe fn get_index_mut_ptr_unchecked(&mut self, i: usize) -> *mut T { self.storage.get_index_mut_ptr_unchecked(i) }
+
+	fn map_inplace<F: FnMut(&mut T)>(&mut self, f: F) { self.storage.map_inplace(f) }
 }
 
 impl<'a, T, L, P, S> OffsetableRowSlice<T, L> for AudioSliceBase<'a, T, Dynamic, L, P, S>
