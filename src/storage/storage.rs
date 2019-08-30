@@ -1,6 +1,6 @@
 use litcontainers::*;
 use crate::format::*;
-use crate::{OwnableAudio, AudioSliceable};
+use crate::{OwnableAudio};
 
 pub trait AudioStorage<T, P>: Storage<T> + OwnableAudio<T>
 	where T: Sample, P: SamplePackingType

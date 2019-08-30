@@ -1,7 +1,5 @@
 use litcontainers::slice::*;
-use litcontainers::format::*;
 use crate::format::*;
-use crate::storage::{AudioStorage, AudioStorageMut};
 
 pub trait AudioSliceable<T: Sample>: Sliceable<T> {
 	#[inline]

@@ -1,6 +1,6 @@
 use litcontainers::*;
 use crate::format::*;
-use crate::{AudioStorage, AudioSliceableMut};
+use crate::{AudioStorage};
 
 
 pub trait AudioStorageMut<T, P>: AudioStorage<T, P> + StorageMut<T>
