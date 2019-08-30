@@ -1,16 +1,15 @@
 #[macro_use] extern crate litcontainers_derive;
+#[macro_use] extern crate derive_new;
 
 pub mod container;
 pub mod format;
 pub mod slice;
 pub mod storage;
-pub mod iterator;
 
 pub use container::*;
 pub use format::*;
 pub use slice::*;
 pub use storage::*;
-pub use iterator::*;
 
 
 #[cfg(test)]

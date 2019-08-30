@@ -1,17 +1,18 @@
 use crate::format::*;
 use litcontainers::{DynamicRowStorage, DynamicColStorage};
 
-pub trait DynamicChannelStorage<T, L>: DynamicRowStorage<T, L>
-	where T: Sample, L: Dim
+pub trait DynamicChannelStorage<T: Sample>: DynamicRowStorage<T>
 {
 	#[inline]
-	fn resize_channel_count(&mut self, count: usize) { self.set_row_count(count) }
+	fn set_channels(&mut self, count: usize) { self.set_rows(count) }
 }
 
-pub trait DynamicSampleStorage<T, C>: DynamicColStorage<T, C>
-	where T: Sample, C: Dim
+pub trait DynamicSampleStorage<T: Sample>: DynamicColStorage<T>
 {
 	#[inline]
-	fn resize_sample_count(&mut self, count: usize) { self.set_col_count(count) }
+	fn set_samples(&mut self, count: usize) { self.set_cols(count) }
 }
 
+
+impl<T: Sample, S: DynamicRowStorage<T>> DynamicChannelStorage<T> for S {}
+impl<T: Sample, S: DynamicColStorage<T>> DynamicSampleStorage<T> for S {}

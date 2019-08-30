@@ -8,3 +8,4 @@ edition = "2018"
 litcontainers = { path = "../litcontainers/litcontainers" }
 litcontainers_derive = { path = "../litcontainers/litcontainers_derive" }
 num-traits = "0.2"
+derive-new = "0.5"
