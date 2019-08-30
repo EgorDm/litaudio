@@ -9,6 +9,9 @@ pub trait AudioStorage<T, P>: Storage<T> + OwnableAudio<T>
 	fn sample_rate(&self) -> i32;
 
 	#[inline]
+	fn packing_type(&self) -> SamplePacking { P::packing_type() }
+
+	#[inline]
 	fn as_channel_ptr(&self, p: usize) -> *const T { self.as_row_ptr(p) }
 
 	#[inline]
