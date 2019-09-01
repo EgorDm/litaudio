@@ -5,18 +5,18 @@ pub trait SamplePackingType: Debug + Send + Sync {
 }
 
 #[derive(Debug)]
-pub struct InterleavedPacking;
+pub struct Interleaved;
 
-impl SamplePackingType for InterleavedPacking {
+impl SamplePackingType for Interleaved {
 	fn packing_type() -> SamplePacking {
 		SamplePacking::Interleaved
 	}
 }
 
 #[derive(Debug)]
-pub struct DeinterleavedPacking;
+pub struct Deinterleaved;
 
-impl SamplePackingType for DeinterleavedPacking {
+impl SamplePackingType for Deinterleaved {
 	fn packing_type() -> SamplePacking {
 		SamplePacking::Deinterleaved
 	}

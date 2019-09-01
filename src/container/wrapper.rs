@@ -7,10 +7,8 @@ use crate::{AudioStorage, AudioStorageMut, OwnableAudio};
 
 pub type DeinterleavedStorage<T, C, L> = VecStorageRM<T, C, L>;
 pub type InterleavedStorage<T, C, L> = VecStorageCM<T, C, L>;
-pub type AudioDeinterleaved<T, C, L> = AudioContainer<T, DeinterleavedPacking, VecStorageRM<T, C, L>>;
-pub type AudioInterleaved<T, C, L> = AudioContainer<T, InterleavedPacking, VecStorageCM<T, C, L>>;
-pub type AudioDeinterleavedC<T, C, L> = Container<T, AudioContainer<T, DeinterleavedPacking, VecStorageRM<T, C, L>>>;
-pub type AudioInterleavedC<T, C, L> = Container<T, AudioContainer<T, InterleavedPacking, VecStorageCM<T, C, L>>>;
+pub type AudioDeinterleaved<T, C, L> = Container<T, AudioContainer<T, Deinterleaved, VecStorageRM<T, C, L>>>;
+pub type AudioInterleaved<T, C, L> = Container<T, AudioContainer<T, Interleaved, VecStorageCM<T, C, L>>>;
 
 // Container storing scalar values. Wraps around given storage.
 #[derive(Debug, Storage, StorageSize, Strided, Ownable, new)]
@@ -120,3 +118,11 @@ impl<'a, T, P, S> IntoOperation for &'a AudioContainer<T, P, S>
 
 	fn into_operation(self) -> Self::OpType { BorrowedProvider::new(self) }
 }
+
+pub trait IntoAudio<T: Sample>: Storage<T> {
+	fn into_audio<P: SamplePackingType>(self, sr: i32, _: P) -> Container<T, AudioContainer<T, P, Self>> {
+		AudioContainer::new(self, sr).into()
+	}
+}
+
+impl<T: Sample, S: Storage<T>> IntoAudio<T> for S {}
